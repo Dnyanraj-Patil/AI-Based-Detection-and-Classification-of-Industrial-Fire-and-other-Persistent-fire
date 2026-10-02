@@ -1,0 +1,29 @@
+{
+  "model_name": "THERMOINTEL_XGBOOST_SOURCE_CLASSIFIER",
+  "model_version": "1.1",
+  "feature_version": "XGB_FEATURES_V1",
+  "label_strategy": "manual labels when supplied, otherwise weak evidence bootstrap",
+  "metrics_are_not_ground_truth": true,
+  "metrics": {
+    "holdout_accuracy": 0.958,
+    "holdout_balanced_accuracy": 0.6921,
+    "holdout_macro_f1": 0.6802,
+    "holdout_samples": 1691
+  },
+  "class_counts": {
+    "INDUSTRIAL FIRE": 2162,
+    "GAS FLARE / INDUSTRIAL THERMAL SOURCE": 35,
+    "FOREST / VEGETATION FIRE": 0,
+    "AGRICULTURAL BURNING": 0,
+    "PERSISTENT THERMAL SOURCE": 190,
+    "OTHER THERMAL SOURCE": 7665
+  },
+  "active_classes": [
+    "INDUSTRIAL FIRE",
+    "GAS FLARE / INDUSTRIAL THERMAL SOURCE",
+    "PERSISTENT THERMAL SOURCE",
+    "OTHER THERMAL SOURCE"
+  ],
+  "trained_examples": 10052,
+  "generated_at": "2026-10-02T02:36:33.351370+00:00"
+}

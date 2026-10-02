@@ -1,0 +1,109 @@
+services:
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: thermointel
+      POSTGRES_USER: thermointel
+      POSTGRES_PASSWORD: thermointel_dev_password
+
+    ports:
+      - "55432:5432"
+
+    volumes:
+      - thermointel_postgres_data_final:/var/lib/postgresql/data
+      - ./database:/docker-entrypoint-initdb.d:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U thermointel -d thermointel"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+    ports:
+      - "6380:6379"
+
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+
+    environment:
+      APP_ENV: development
+      APP_NAME: ThermoIntel
+      POSTGRES_DB: thermointel
+      POSTGRES_USER: thermointel
+      POSTGRES_PASSWORD: thermointel_dev_password
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FIRMS_MAP_KEY: ${FIRMS_MAP_KEY}
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./backend/models:/app/backend/models
+
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)\""]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 20s
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  osm-ingest:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: "no"
+
+    environment:
+      APP_ENV: development
+      APP_NAME: ThermoIntel
+      POSTGRES_DB: thermointel
+      POSTGRES_USER: thermointel
+      POSTGRES_PASSWORD: thermointel_dev_password
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+
+    command: ["python", "ingest_osm_india.py"]
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api/v1
+    restart: unless-stopped
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+
+volumes:
+  thermointel_postgres_data_final:

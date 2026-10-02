@@ -1,0 +1,25 @@
+THERMOINTEL — XGBOOST MODEL VALIDATION
+
+Model: XGBoost multiclass classifier
+Task: Thermal-event source classification
+
+TEST SET
+Human-reviewed events: __________
+
+RESULTS
+Accuracy:             __________ %
+Balanced Accuracy:    __________ %
+Macro Precision:      __________ %
+Macro Recall:         __________ %
+Macro F1:             __________ %
+
+EVALUATION METHOD
+[ ] Human-reviewed labels
+[ ] Held-out test events
+[ ] Confusion matrix generated
+
+JUDGE EXPLANATION
+“ThermoIntel uses XGBoost to classify probable thermal-event sources. We calculate accuracy only against human-reviewed ground-truth labels. XGBoost confidence is a probability estimate and is not reported as accuracy. We also report balanced accuracy, precision, recall and macro F1 to show performance across classes.”
+
+LIMITATION
+If the human-reviewed test set is empty, do not write a fabricated accuracy percentage. Collect reviewed labels and run the evaluation script first.
